@@ -12,6 +12,7 @@ PyQt5 = "^5.15.4"
 
 [tool.poetry.dev-dependencies]
 PyQt5-stubs = "^5.15.2"
+pyinstaller = "^4.5.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
