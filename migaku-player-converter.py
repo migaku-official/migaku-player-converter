@@ -1,4 +1,5 @@
 import os
+import platform
 import pprint
 import sys
 from typing import Any
@@ -13,6 +14,13 @@ from PyQt5.QtWidgets import (
     QLabel,
     QVBoxLayout,
 )
+
+ffprobe_command = "ffprobe"
+ffmpeg_command = "ffmpeg"
+if platform.system() == "Windows":
+    # for some reason pyinstaller bundles the binaries like that
+    ffprobe_command = "ffprobe.exe"
+    ffmpeg_command = "ffmpeg.exe"
 
 
 class LanguageSelector(QDialog):
@@ -51,7 +59,7 @@ class LanguageSelector(QDialog):
 
 def check_if_video_file(filename):
     try:
-        probe = ffmpeg.probe(filename)
+        probe = ffmpeg.probe(filename, cmd=ffprobe_command)
     except ffmpeg.Error:
         # print(e.stderr)
         return False
@@ -100,7 +108,7 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
 
 def convert_to_migaku_video(input_file):
     pp = pprint.PrettyPrinter(indent=4, width=178, sort_dicts=False)
-    streams = ffmpeg.probe(input_file)["streams"]
+    streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
     keep_video = False
     keep_audio = False
     audio_index = decide_on_audio_stream(streams)
@@ -129,7 +137,9 @@ def convert_to_migaku_video(input_file):
     input = ffmpeg.input(input_file)
     output_video = input["v:0"]
     output_audio = input[str(audio_index)]
-    ffmpeg.output(output_video, output_audio, **ffmpeg_args).overwrite_output().run()
+    ffmpeg.output(output_video, output_audio, **ffmpeg_args).overwrite_output().run(
+        cmd=ffmpeg_command
+    )
 
 
 def print_ffprobe(input_file):
