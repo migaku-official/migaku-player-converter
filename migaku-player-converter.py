@@ -2,6 +2,7 @@ import os
 import platform
 import pprint
 import sys
+from pathlib import Path
 from typing import Any
 
 import ffmpeg
@@ -112,9 +113,10 @@ def convert_to_migaku_video(input_file):
     keep_video = False
     keep_audio = False
     audio_index = decide_on_audio_stream(streams)
+    filename = Path(input_file)
+    output_file = filename.with_suffix(".migaku_player_ready.mp4")
     for stream in streams:
         if stream["codec_type"] == "video":
-            # pp.pprint(stream)
             if stream["codec_name"] == "h264":
                 keep_video = True
             print(
@@ -128,7 +130,7 @@ def convert_to_migaku_video(input_file):
                 f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept"
             )
 
-    ffmpeg_args = {"filename": "test.mp4", "strict": "-2"}
+    ffmpeg_args = {"filename": output_file, "strict": "-2"}
     if keep_audio:
         ffmpeg_args["acodec"] = "copy"
     if keep_video:
@@ -137,6 +139,7 @@ def convert_to_migaku_video(input_file):
     input = ffmpeg.input(input_file)
     output_video = input["v:0"]
     output_audio = input[str(audio_index)]
+
     ffmpeg.output(output_video, output_audio, **ffmpeg_args).overwrite_output().run(
         cmd=ffmpeg_command
     )
