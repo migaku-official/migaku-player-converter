@@ -28,7 +28,6 @@ app = QApplication([])
 ffprobe_command = "ffprobe"
 ffmpeg_command = "ffmpeg"
 if platform.system() == "Windows":
-    # for some reason pyinstaller bundles the binaries like that
     ffprobe_command = "ffprobe.exe"
     ffmpeg_command = "ffmpeg.exe"
 
@@ -103,6 +102,7 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
             global saved_audio_index
             global save_audio_index
             if save_audio_index:
+                print(f"used saved index {saved_audio_index}")
                 return saved_audio_index
             else:
                 language_select_dialog = LanguageSelector(valid_streams)
@@ -135,11 +135,9 @@ def convert_to_migaku_video(input_file):
                         None,
                         "Migaku Warning Dialog",
                         """
-                        The video codec is incompatible with browsers.
-                        Converting it may take a long time
-                        and take up significant resources.
-                        Do you want to continue?
-                        """,
+The video codec is incompatible with your browser.
+Converting it may take a long time and take up significant resources.
+Do you want to continue?""",
                         buttons=QMessageBox.Yes | QMessageBox.Cancel,
                         defaultButton=QMessageBox.Yes,
                     )
