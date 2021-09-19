@@ -1,0 +1,52 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: archlinux:latest
+          options: -v ${{ github.workspace }}:/build
+          shell: bash
+          run: |
+            pacman -Syu --noconfirm python python-poetry qt5-base libxcomposite gtk3 pango mpdecimal base-devel &&
+            cd /build &&
+            poetry config virtualenvs.in-project true &&
+            poetry install &&
+            poetry run pyinstaller --clean --onefile migaku-player-converter.py
+
+
+      # Runs a set of commands using the runners shell
+      # - name: Install dependencies and build project
+      #   run: |
+      #     sudo apt-get update -y && 
+      #     sudo apt-get install python3.9 virtualenv pyqt5-dev pyqt5-dev-tools python3-pyqt5 qtbase5-dev python3.9-dev -y &&
+      #     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3.9 - &&
+      #     cd /$GITHUB_WORKSPACE && 
+      #     $HOME/.local/bin/poetry config virtualenvs.in-project true && 
+      #     $HOME/.local/bin/poetry install && 
+      #     $HOME/.local/bin/poetry run pyinstaller --clean --onefile migaku-player-converter.py &&
+
+      
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: binary
+          path: |
+            dist
+            
