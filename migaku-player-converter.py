@@ -13,8 +13,17 @@ from PyQt5.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QLabel,
+    QMessageBox,
     QVBoxLayout,
 )
+
+save_audio_index = False
+saved_audio_index = 0
+
+confirmed_hevc_codec_conversion = False
+
+app = QApplication([])
+
 
 ffprobe_command = "ffprobe"
 ffmpeg_command = "ffmpeg"
@@ -91,24 +100,24 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
         if len(no_commentary_streams) == 1:
             return no_commentary_streams[0]["index"]
         else:
-            app = QApplication([])
-
-            language_select_dialog = LanguageSelector(valid_streams)
-            execed = language_select_dialog.exec()
-            if execed:
-                selected_stream = language_select_dialog.combobox.currentText()
-                stream_index = language_select_dialog.combo_dict[selected_stream]
-                return stream_index
+            global saved_audio_index
+            global save_audio_index
+            if save_audio_index:
+                return saved_audio_index
             else:
-                print("Cancel!")
-                sys.exit(0)
-
-            # pp = pprint.PrettyPrinter(indent=4, width=178, sort_dicts=False)
-            # pp.pprint(no_commentary_streams)
+                language_select_dialog = LanguageSelector(valid_streams)
+                execed = language_select_dialog.exec()
+                if execed:
+                    selected_stream = language_select_dialog.combobox.currentText()
+                    stream_index = language_select_dialog.combo_dict[selected_stream]
+                    saved_audio_index = stream_index
+                    save_audio_index = True
+                    return stream_index
+                else:
+                    sys.exit(0)
 
 
 def convert_to_migaku_video(input_file):
-    pp = pprint.PrettyPrinter(indent=4, width=178, sort_dicts=False)
     streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
     keep_video = False
     keep_audio = False
@@ -119,6 +128,25 @@ def convert_to_migaku_video(input_file):
         if stream["codec_type"] == "video":
             if stream["codec_name"] == "h264":
                 keep_video = True
+            if stream["codec_name"] == "hevc":
+                global confirmed_hevc_codec_conversion
+                if not confirmed_hevc_codec_conversion:
+                    button = QMessageBox.warning(
+                        None,
+                        "Migaku Warning Dialog",
+                        """
+                        The video codec is incompatible with browsers.
+                        Converting it may take a long time
+                        and take up significant resources.
+                        Do you want to continue?
+                        """,
+                        buttons=QMessageBox.Yes | QMessageBox.Cancel,
+                        defaultButton=QMessageBox.Yes,
+                    )
+                    if button == QMessageBox.Cancel:
+                        sys.exit(0)
+                    else:
+                        confirmed_hevc_codec_conversion = True
             print(
                 f"video codec is {stream['codec_name']}, will {'' if keep_video else 'not '}be kept"
             )
