@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "migaku-player-converter"
-version = "0.1.0"
+version = "0.3.0"
 description = "Converts video files for Migaku Player"
 authors = ["Your Name <you@example.com>"]
 license = "gpl2"
