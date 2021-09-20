@@ -4,12 +4,16 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Allows you to run this workflow manually from the Actions tab
+  push:
+    tags:
+      - "*"
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
+  release:
+
   build-linux:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
@@ -30,9 +34,56 @@ jobs:
             poetry install &&
             poetry run pyinstaller --clean --onefile migaku-player-converter.py
 
+      # - name: Archive production artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: binary-linux
+      #     path: |
+      #       dist
+      - name: release-linux
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          tag_name: ${{ github.ref }}
+          artifacts: "dist/migaku-player-converter*"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+  build-mac:
+    # The type of runner that the job will run on
+    runs-on: macos-10.15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: pipx install poetry
+      - name: build project
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install
+          poetry run pyinstaller --onefile --clean --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: binary-linux
+          name: binary-mac
+          path: |
+            dist
+  build-windows:
+    # The type of runner that the job will run on
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: pipx install poetry
+      - name: build project
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install
+          poetry run pyinstaller --onefile --clean --add-binary 'binaries/windows;.' migaku-player-converter.py
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: binary-windows
           path: |
             dist
