@@ -22,6 +22,7 @@ saved_audio_index = 0
 
 confirmed_hevc_codec_conversion = False
 
+
 app = QApplication([])
 
 
@@ -114,6 +115,7 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
                     save_audio_index = True
                     return stream_index
                 else:
+                    print("language selection canceled")
                     sys.exit(0)
 
 
@@ -142,6 +144,7 @@ Do you want to continue?""",
                         defaultButton=QMessageBox.Yes,
                     )
                     if button == QMessageBox.Cancel:
+                        print("video codec canceled")
                         sys.exit(0)
                     else:
                         confirmed_hevc_codec_conversion = True

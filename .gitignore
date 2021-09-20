@@ -1,4 +1,6 @@
-
+test-videos
+*.mkv
+*.mp4
 # Created by https://www.toptal.com/developers/gitignore/api/vim,python,virtualenv,vagrant
 # Edit at https://www.toptal.com/developers/gitignore?templates=vim,python,virtualenv,vagrant
 
