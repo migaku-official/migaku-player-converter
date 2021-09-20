@@ -4,13 +4,15 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Allows you to run this workflow manually from the Actions tab
+  push:
+    tags:
+      - "*"
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  build-linux:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
 
@@ -30,23 +32,59 @@ jobs:
             poetry install &&
             poetry run pyinstaller --clean --onefile migaku-player-converter.py
 
-
-      # Runs a set of commands using the runners shell
-      # - name: Install dependencies and build project
-      #   run: |
-      #     sudo apt-get update -y && 
-      #     sudo apt-get install python3.9 virtualenv pyqt5-dev pyqt5-dev-tools python3-pyqt5 qtbase5-dev python3.9-dev -y &&
-      #     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3.9 - &&
-      #     cd /$GITHUB_WORKSPACE && 
-      #     $HOME/.local/bin/poetry config virtualenvs.in-project true && 
-      #     $HOME/.local/bin/poetry install && 
-      #     $HOME/.local/bin/poetry run pyinstaller --clean --onefile migaku-player-converter.py &&
-
-      
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+      - name: rename binary
+        run: sudo mv dist/migaku-player-converter dist/migaku-player-converter-linux
+      - name: release-linux
+        uses: ncipollo/release-action@v1.8.9
+        id: create_release
         with:
-          name: binary
-          path: |
-            dist
-            
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          artifacts: "dist/*"
+
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+  build-mac:
+    # The type of runner that the job will run on
+    runs-on: macos-10.15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: pipx install poetry
+      - name: build project
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install
+          poetry run pyinstaller --onefile --clean --add-binary 'binaries/mac:.' migaku-player-converter.py
+      - name: rename binary
+        run: mv dist/migaku-player-converter dist/migaku-player-converter-mac
+      - name: release-mac
+        uses: ncipollo/release-action@v1.8.9
+        id: create_release
+        with:
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          artifacts: "dist/*"
+
+  build-windows:
+    # The type of runner that the job will run on
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - run: pipx install poetry
+      - name: build project
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install
+          poetry run pyinstaller --onefile --clean --add-binary 'binaries/windows;.' migaku-player-converter.py
+      - name: release-windows
+        uses: ncipollo/release-action@v1.8.9
+        id: create_release
+        with:
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          artifacts: "dist/*"
