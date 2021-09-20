@@ -32,8 +32,9 @@ jobs:
             poetry install &&
             poetry run pyinstaller --clean --onefile migaku-player-converter.py
 
+      - run: ls -l dist
       - name: rename binary
-        run: mv dist/migaku-player-converter dist/migaku-player-converter-linux
+        run: sudo mv dist/migaku-player-converter dist/migaku-player-converter-linux
       - name: release-linux
         uses: ncipollo/release-action@v1.8.9
         id: create_release
@@ -41,7 +42,6 @@ jobs:
           draft: false
           allowUpdates: true
           prerelease: true
-          tag_name: ${{ github.tag }}
           artifacts: "dist/*"
 
         env:
@@ -67,7 +67,6 @@ jobs:
           draft: false
           allowUpdates: true
           prerelease: true
-          tag_name: ${{ github.tag }}
           artifacts: "dist/*"
 
   build-windows:
@@ -89,5 +88,4 @@ jobs:
           draft: false
           allowUpdates: true
           prerelease: true
-          tag_name: ${{ github.tag }}
           artifacts: "dist/*"
