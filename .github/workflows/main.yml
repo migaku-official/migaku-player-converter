@@ -32,12 +32,8 @@ jobs:
             poetry install &&
             poetry run pyinstaller --clean --onefile migaku-player-converter.py
 
-      # - name: Archive production artifacts
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: binary-linux
-      #     path: |
-      #       dist
+      - name: rename binary
+        run: mv dist/migaku-player-converter dist/migaku-player-converter-linux
       - name: release-linux
         uses: ncipollo/release-action@v1.8.9
         id: create_release
@@ -62,12 +58,18 @@ jobs:
           poetry config virtualenvs.in-project true
           poetry install
           poetry run pyinstaller --onefile --clean --add-binary 'binaries/mac:.' migaku-player-converter.py
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+      - name: rename binary
+        run: mv dist/migaku-player-converter dist/migaku-player-converter-mac
+      - name: release-mac
+        uses: ncipollo/release-action@v1.8.9
+        id: create_release
         with:
-          name: binary-mac
-          path: |
-            dist
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          tag_name: ${{ github.tag }}
+          artifacts: "dist/*"
+
   build-windows:
     # The type of runner that the job will run on
     runs-on: windows-2022
@@ -80,9 +82,12 @@ jobs:
           poetry config virtualenvs.in-project true
           poetry install
           poetry run pyinstaller --onefile --clean --add-binary 'binaries/windows;.' migaku-player-converter.py
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+      - name: release-windows
+        uses: ncipollo/release-action@v1.8.9
+        id: create_release
         with:
-          name: binary-windows
-          path: |
-            dist
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          tag_name: ${{ github.tag }}
+          artifacts: "dist/*"
