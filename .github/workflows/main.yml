@@ -47,6 +47,7 @@ jobs:
           prerelease: true
           tag_name: ${{ github.tag }}
           artifacts: "dist/*"
+
         env:
           GITHUB_TOKEN: ${{ github.token }}
   build-mac:
