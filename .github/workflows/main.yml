@@ -39,14 +39,14 @@ jobs:
       #     path: |
       #       dist
       - name: release-linux
-        uses: actions/create-release@v1
+        uses: ncipollo/release-action@v1.8.9
         id: create_release
         with:
           draft: false
           allowUpdates: true
           prerelease: true
-          tag_name: ${{ github.ref }}
-          artifacts: "dist/migaku-player-converter*"
+          tag_name: ${{ github.tag }}
+          artifacts: "dist/*"
         env:
           GITHUB_TOKEN: ${{ github.token }}
   build-mac:
