@@ -123,6 +123,7 @@ def convert_to_migaku_video(input_file):
     streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
     keep_video = False
     keep_audio = False
+    subtitle_indices = []
     audio_index = decide_on_audio_stream(streams)
     filename = Path(input_file)
     output_file = filename.with_suffix(".migaku_player_ready.mp4")
@@ -158,8 +159,11 @@ Do you want to continue?""",
             print(
                 f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept"
             )
+        if stream["codec_type"] == "subtitle":
+            if stream["codec_name"] in ["subrip", "ass", "ssa"]:
+                subtitle_indices.append(stream["index"])
 
-    ffmpeg_args = {"filename": output_file, "strict": "-2"}
+    ffmpeg_args = {"filename": output_file, "strict": "-2", "scodec": "mov_text"}
     if keep_audio:
         ffmpeg_args["acodec"] = "copy"
     if keep_video:
@@ -168,9 +172,12 @@ Do you want to continue?""",
     input = ffmpeg.input(input_file)
     output_video = input["v:0"]
     output_audio = input[str(audio_index)]
+    output_subtitles = [input[str(index)] for index in subtitle_indices]
 
-    ffmpeg.output(output_video, output_audio, **ffmpeg_args).overwrite_output().run(
-        cmd=ffmpeg_command
+    ffmpeg.output(
+        output_video, output_audio, *output_subtitles, **ffmpeg_args
+    ).overwrite_output().run(
+        cmd=ffmpeg_command,
     )
 
 
@@ -182,13 +189,16 @@ def print_ffprobe(input_file):
             pp.pprint(stream)
         if stream["codec_type"] == "audio":
             pp.pprint(stream)
+        if stream["codec_type"] == "subtitle":
+            pp.pprint(stream)
 
 
 current_dir_files = os.listdir(os.curdir)
 current_dir_video_files = list(filter(check_if_video_file, current_dir_files))
+current_dir_video_files_not_converted = [
+    file for file in current_dir_video_files if "migaku_player_ready" not in file
+]
 
-for file in current_dir_video_files:
+for file in current_dir_video_files_not_converted:
+    # print_ffprobe(file)
     convert_to_migaku_video(file)
-
-
-# pp.pprint(info["streams"])
