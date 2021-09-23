@@ -1,5 +1,4 @@
 import os
-import platform
 import pprint
 import sys
 from pathlib import Path
@@ -24,13 +23,6 @@ confirmed_hevc_codec_conversion = False
 
 
 app = QApplication([])
-
-
-ffprobe_command = "ffprobe"
-ffmpeg_command = "ffmpeg"
-if platform.system() == "Windows":
-    ffprobe_command = "ffprobe.exe"
-    ffmpeg_command = "ffmpeg.exe"
 
 
 class LanguageSelector(QDialog):
@@ -69,7 +61,7 @@ class LanguageSelector(QDialog):
 
 def check_if_video_file(filename):
     try:
-        probe = ffmpeg.probe(filename, cmd=ffprobe_command)
+        probe = ffmpeg.probe(filename)
     except ffmpeg.Error:
         # print(e.stderr)
         return False
@@ -120,7 +112,7 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
 
 
 def convert_to_migaku_video(input_file):
-    streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
+    streams = ffmpeg.probe(input_file)["streams"]
     keep_video = False
     keep_audio = False
     subtitle_indices = []
@@ -176,9 +168,7 @@ Do you want to continue?""",
 
     ffmpeg.output(
         output_video, output_audio, *output_subtitles, **ffmpeg_args
-    ).overwrite_output().run(
-        cmd=ffmpeg_command,
-    )
+    ).overwrite_output().run()
 
 
 def print_ffprobe(input_file):
