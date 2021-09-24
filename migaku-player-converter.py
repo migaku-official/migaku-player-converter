@@ -130,9 +130,12 @@ def convert_to_migaku_video(input_file):
                         None,
                         "Migaku Warning Dialog",
                         """
-The video codec is incompatible with your browser.
+The video codec "hevc" (also called "h265") contained in your file is incompatible with Migaku Player.
 Converting it may take a long time and take up significant resources.
-Do you want to continue?""",
+You can circumvent this in the future by downloading files that are encoded with "h264".
+
+Do you want to continue?
+                        """,
                         buttons=QMessageBox.Yes | QMessageBox.Cancel,
                         defaultButton=QMessageBox.Yes,
                     )
