@@ -30,8 +30,8 @@ ffmpeg_command: Optional[str] = ""
 
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
 
@@ -42,6 +42,7 @@ if os.path.isfile(resource_path("./ffmpeg")):
 if platform.system() == "Windows":
     ffprobe_command = "ffprobe.exe"
     ffmpeg_command = "ffmpeg.exe"
+
 
 if not ffprobe_command:
     ffprobe_command = which("ffprobe")
@@ -225,10 +226,22 @@ def print_ffprobe(input_file):
 
 
 current_dir_files = os.listdir(os.curdir)
+if (
+    platform.system() == "Darwin"
+    and getattr(sys, "frozen", False)
+    and "Contents" in str(os.path.abspath(getattr(sys, "executable", os.curdir)))
+):
+    bundle_dir = Path(
+        os.path.dirname(os.path.abspath(getattr(sys, "executable", os.curdir)))
+    )
+    basepath = str(bundle_dir.parent.parent.parent.absolute())
+    current_dir_files = os.listdir(basepath)
+    current_dir_files = [os.path.join(basepath, file) for file in current_dir_files]
 current_dir_video_files = list(filter(check_if_video_file, current_dir_files))
 current_dir_video_files_not_converted = [
     file for file in current_dir_video_files if "migaku_player_ready" not in file
 ]
+
 
 for file in current_dir_video_files_not_converted:
     # print_ffprobe(file)

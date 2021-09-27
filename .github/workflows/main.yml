@@ -59,6 +59,8 @@ jobs:
           poetry run pyinstaller --onefile --clean --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: rename binary
         run: mv dist/migaku-player-converter dist/migaku-player-converter-mac
+      - name: rename binary
+        run: mv dist/migaku-player-converter.app dist/migaku-player-converter-mac.app
       - name: release-mac
         uses: ncipollo/release-action@v1.8.9
         id: create_release
