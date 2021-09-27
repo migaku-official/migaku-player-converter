@@ -30,7 +30,7 @@ jobs:
             cd /build &&
             poetry config virtualenvs.in-project true &&
             poetry install &&
-            poetry run pyinstaller --clean --onefile migaku-player-converter.py
+            poetry run pyinstaller --clean --onefile --add-binary 'binaries/linux:.' migaku-player-converter.py
 
       - name: rename binary
         run: sudo mv dist/migaku-player-converter dist/migaku-player-converter-linux

@@ -1,8 +1,10 @@
 import os
+import platform
 import pprint
 import sys
 from pathlib import Path
-from typing import Any
+from shutil import which
+from typing import Any, Optional
 
 import ffmpeg
 from PyQt5.QtCore import Qt
@@ -21,8 +23,37 @@ saved_audio_index = 0
 
 confirmed_hevc_codec_conversion = False
 
-
 app = QApplication([])
+
+ffprobe_command: Optional[str] = ""
+ffmpeg_command: Optional[str] = ""
+
+if os.path.isfile("./ffprobe"):
+    ffprobe_command = "./ffprobe"
+if os.path.isfile("./ffmpeg"):
+    ffmpeg_command = "./ffmpeg"
+if platform.system() == "Windows":
+    ffprobe_command = "ffprobe.exe"
+    ffmpeg_command = "ffmpeg.exe"
+
+if not ffprobe_command:
+    ffprobe_command = which("ffprobe")
+if not ffmpeg_command:
+    ffmpeg_command = which("ffmpeg")
+
+missing_program = ""
+if not ffprobe_command:
+    missing_program = "ffprobe"
+if not ffmpeg_command:
+    missing_program = "ffmpeg"
+if missing_program:
+    QMessageBox.critical(
+        None,
+        "Migaku Error Dialog",
+        f"It seems {missing_program} is not installed. Please retry after installing",
+        buttons=QMessageBox.Ok,
+    )
+    sys.exit(1)
 
 
 class LanguageSelector(QDialog):
@@ -61,7 +92,7 @@ class LanguageSelector(QDialog):
 
 def check_if_video_file(filename):
     try:
-        probe = ffmpeg.probe(filename)
+        probe = ffmpeg.probe(filename, cmd=ffprobe_command)
     except ffmpeg.Error:
         # print(e.stderr)
         return False
@@ -112,7 +143,7 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
 
 
 def convert_to_migaku_video(input_file):
-    streams = ffmpeg.probe(input_file)["streams"]
+    streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
     keep_video = False
     keep_audio = False
     subtitle_indices = []
@@ -171,12 +202,12 @@ Do you want to continue?
 
     ffmpeg.output(
         output_video, output_audio, *output_subtitles, **ffmpeg_args
-    ).overwrite_output().run()
+    ).overwrite_output().run(cmd=ffmpeg_command)
 
 
 def print_ffprobe(input_file):
     pp = pprint.PrettyPrinter(indent=4, width=178, sort_dicts=False)
-    streams = ffmpeg.probe(input_file)["streams"]
+    streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
     for stream in streams:
         if stream["codec_type"] == "video":
             pp.pprint(stream)
