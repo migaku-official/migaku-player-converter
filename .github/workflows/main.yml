@@ -56,7 +56,7 @@ jobs:
         run: |
           poetry config virtualenvs.in-project true
           poetry install
-          poetry run pyinstaller --onefile --clean --add-binary 'binaries/mac:.' migaku-player-converter.py
+          poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: rename binary
         run: mv dist/migaku-player-converter dist/migaku-player-converter-mac
       - name: rename binary
