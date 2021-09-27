@@ -28,10 +28,17 @@ app = QApplication([])
 ffprobe_command: Optional[str] = ""
 ffmpeg_command: Optional[str] = ""
 
-if os.path.isfile("./ffprobe"):
-    ffprobe_command = "./ffprobe"
-if os.path.isfile("./ffmpeg"):
-    ffmpeg_command = "./ffmpeg"
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
+
+
+if os.path.isfile(resource_path("./ffprobe")):
+    ffprobe_command = resource_path("./ffprobe")
+if os.path.isfile(resource_path("./ffmpeg")):
+    ffmpeg_command = resource_path("./ffmpeg")
 if platform.system() == "Windows":
     ffprobe_command = "ffprobe.exe"
     ffmpeg_command = "ffmpeg.exe"
