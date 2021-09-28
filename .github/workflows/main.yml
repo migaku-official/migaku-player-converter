@@ -72,7 +72,7 @@ jobs:
           draft: false
           allowUpdates: true
           prerelease: true
-          artifacts: "dist/*"
+          artifacts: "release/*"
 
   build-windows:
     # The type of runner that the job will run on
