@@ -68,7 +68,19 @@ jobs:
           draft: false
           allowUpdates: true
           prerelease: true
-          artifacts: "dist/*"
+          artifacts: "dist/migaku-player-converter-mac"
+      - name: Remove command line binary
+        run: rm migaku-player-converter-mac
+      - name: Bundle dmg
+        run: hdiutil create -volname migaku-player-converter -srcfolder dist/ -ov -format UDZO migaku-player-converter-mac.dmg
+      - name: release-mac-dmg
+        uses: ncipollo/release-action@v1.8.9
+        id: create_release
+        with:
+          draft: false
+          allowUpdates: true
+          prerelease: true
+          artifacts: "migaku-player-converter-mac.dmg"
 
   build-windows:
     # The type of runner that the job will run on
