@@ -10,6 +10,9 @@ python = "^3.9"
 ffmpeg-python = "^0.2.0"
 PyQt5 = "^5.15.4"
 
+[tool.poetry.group.dev.dependencies]
+setuptools = "^62.3.2"
+
 [tool.poetry.dev-dependencies]
 PyQt5-stubs = "^5.15.2"
 pyinstaller = "^4.5.1"
