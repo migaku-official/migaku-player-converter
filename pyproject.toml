@@ -11,7 +11,6 @@ ffmpeg-python = "^0.2.0"
 PyQt5 = "^5.15.4"
 
 [tool.poetry.dev-dependencies]
-setuptools = "^62.3.2"
 PyQt5-stubs = "^5.15.2"
 pyinstaller = "^4.5.1"
 
@@ -19,5 +18,5 @@ pyinstaller = "^4.5.1"
 line-length = 120
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["setuptools", "poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
