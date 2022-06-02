@@ -141,7 +141,7 @@ testing-integration = ["pytest", "pytest-xdist", "pytest-enabler", "virtualenv (
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f6c796acd2f7aca1cebc596293ecd23ae808c50420bcd2c16e82335db1da8aa0"
+content-hash = "ee50d381e1cc931bca8bc62e7561e8ae14db4ad364117a121bbc007c93251902"
 
 [metadata.files]
 altgraph = [

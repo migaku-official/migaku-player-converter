@@ -26,8 +26,9 @@ jobs:
           options: -v ${{ github.workspace }}:/build
           shell: bash
           run: |
-            pacman -Syu --noconfirm python python-poetry qt5-base libxcomposite gtk3 pango mpdecimal base-devel &&
+            pacman -Syu --noconfirm python python-poetry python-setuptools qt5-base libxcomposite gtk3 pango mpdecimal base-devel &&
             cd /build &&
+            rm -rf ./* &&
             poetry config virtualenvs.in-project true &&
             poetry install &&
             poetry run pyinstaller --clean --onefile --add-binary 'binaries/linux:.' migaku-player-converter.py
