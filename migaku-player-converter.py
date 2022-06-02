@@ -73,16 +73,14 @@ class LanguageSelector(QDialog):
         message = QLabel("Please select the appropriate audio stream")
         self.combobox = QComboBox(self)
         self.combo_dict = {}
-        for stream in streams:
+        for index, stream in enumerate(streams):
+            print(stream)
             title = stream["tags"]["title"] if "title" in stream["tags"] else ""
-            language = (
-                stream["tags"]["language"] if "language" in stream["tags"] else ""
-            )
-            dict_key = ""
-            if title and language:
-                dict_key = title + " - " + language
-            else:
-                dict_key = title if title else language
+            language = stream["tags"]["language"] if "language" in stream["tags"] else ""
+
+            if not language:
+                language = stream["tags"]["HANDLER_NAME"] if "HANDLER_NAME" in stream["tags"] else ""
+            dict_key = " - ".join([x for x in [str(index), title, language] if x])
             self.combo_dict[dict_key] = stream["index"]
         for key in self.combo_dict:
             self.combobox.addItem(key)
@@ -104,50 +102,41 @@ def check_if_video_file(filename):
     except ffmpeg.Error:
         # print(e.stderr)
         return False
-    video_stream = next(
-        (stream for stream in probe["streams"] if stream["codec_type"] == "video"), None
-    )
+    video_stream = next((stream for stream in probe["streams"] if stream["codec_type"] == "video"), None)
     if video_stream is None:
         return False
     return True
 
 
 def decide_on_audio_stream(streams: list[dict[str, Any]]):
-    valid_streams = []
-    for stream in streams:
-        if stream["codec_type"] == "audio":
-            valid_streams.append(stream)
+    valid_streams = [stream for stream in streams if stream["codec_type"] == "audio"]
+
     if len(valid_streams) == 1:
         return valid_streams[0]["index"]
-    else:
-        no_commentary_streams: list[dict[str, Any]] = []
-        for stream in valid_streams:
-            if (
-                "title" not in stream["tags"]
-                or "commentary" not in stream["tags"]["title"].lower()
-            ):
-                no_commentary_streams.append(stream)
+    no_commentary_streams: list[dict[str, Any]] = [
+        stream
+        for stream in valid_streams
+        if "title" not in stream["tags"] or "commentary" not in stream["tags"]["title"].lower()
+    ]
 
-        if len(no_commentary_streams) == 1:
-            return no_commentary_streams[0]["index"]
+    if len(no_commentary_streams) == 1:
+        return no_commentary_streams[0]["index"]
+    global saved_audio_index
+    global save_audio_index
+    if save_audio_index:
+        print(f"used saved index {saved_audio_index}")
+        return saved_audio_index
+    else:
+        language_select_dialog = LanguageSelector(valid_streams)
+        if execed := language_select_dialog.exec():
+            selected_stream = language_select_dialog.combobox.currentText()
+            stream_index = language_select_dialog.combo_dict[selected_stream]
+            saved_audio_index = stream_index
+            save_audio_index = True
+            return stream_index
         else:
-            global saved_audio_index
-            global save_audio_index
-            if save_audio_index:
-                print(f"used saved index {saved_audio_index}")
-                return saved_audio_index
-            else:
-                language_select_dialog = LanguageSelector(valid_streams)
-                execed = language_select_dialog.exec()
-                if execed:
-                    selected_stream = language_select_dialog.combobox.currentText()
-                    stream_index = language_select_dialog.combo_dict[selected_stream]
-                    saved_audio_index = stream_index
-                    save_audio_index = True
-                    return stream_index
-                else:
-                    print("language selection canceled")
-                    sys.exit(0)
+            print("language selection canceled")
+            sys.exit(0)
 
 
 def convert_to_migaku_video(input_file):
@@ -183,19 +172,14 @@ Do you want to continue?
                         sys.exit(0)
                     else:
                         confirmed_hevc_codec_conversion = True
-            print(
-                f"video codec is {stream['codec_name']}, will {'' if keep_video else 'not '}be kept"
-            )
+            print(f"video codec is {stream['codec_name']}, will {'' if keep_video else 'not '}be kept")
 
         if stream["codec_type"] == "audio" and stream["index"] == audio_index:
             if stream["codec_name"] in ["aac", "mp3", "opus", "flac"]:
                 keep_audio = True
-            print(
-                f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept"
-            )
-        if stream["codec_type"] == "subtitle":
-            if stream["codec_name"] in ["subrip", "ass", "ssa"]:
-                subtitle_indices.append(stream["index"])
+            print(f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept")
+        if stream["codec_type"] == "subtitle" and stream["codec_name"] in ["subrip", "ass", "ssa"]:
+            subtitle_indices.append(stream["index"])
 
     ffmpeg_args = {"filename": output_file, "strict": "-2", "scodec": "mov_text"}
     if keep_audio:
@@ -208,9 +192,9 @@ Do you want to continue?
     output_audio = input[str(audio_index)]
     output_subtitles = [input[str(index)] for index in subtitle_indices]
 
-    ffmpeg.output(
-        output_video, output_audio, *output_subtitles, **ffmpeg_args
-    ).overwrite_output().run(cmd=ffmpeg_command)
+    ffmpeg.output(output_video, output_audio, *output_subtitles, **ffmpeg_args).overwrite_output().run(
+        cmd=ffmpeg_command
+    )
 
 
 def print_ffprobe(input_file):
@@ -231,16 +215,12 @@ if (
     and getattr(sys, "frozen", False)
     and "Contents" in str(os.path.abspath(getattr(sys, "executable", os.curdir)))
 ):
-    bundle_dir = Path(
-        os.path.dirname(os.path.abspath(getattr(sys, "executable", os.curdir)))
-    )
+    bundle_dir = Path(os.path.dirname(os.path.abspath(getattr(sys, "executable", os.curdir))))
     basepath = str(bundle_dir.parent.parent.parent.absolute())
     current_dir_files = os.listdir(basepath)
     current_dir_files = [os.path.join(basepath, file) for file in current_dir_files]
 current_dir_video_files = list(filter(check_if_video_file, current_dir_files))
-current_dir_video_files_not_converted = [
-    file for file in current_dir_video_files if "migaku_player_ready" not in file
-]
+current_dir_video_files_not_converted = [file for file in current_dir_video_files if "migaku_player_ready" not in file]
 
 
 for file in current_dir_video_files_not_converted:
