@@ -10,13 +10,13 @@ python = ">=3.9, <3.11"
 PyQt5 = "^5.15.6"
 ffmpeg-python = "^0.2.0"
 
-[tool.poetry.dev-dependencies]
-pyinstaller = "^5.1"
+[tool.poetry.group.dev.dependencies]
 PyQt5-stubs = "^5.15.6.0"
+pyinstaller = "^5.1"
 
 [tool.black]
 line-length = 120
 
 [build-system]
-requires = ["setuptools", "poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

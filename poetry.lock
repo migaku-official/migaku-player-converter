@@ -10,7 +10,7 @@ python-versions = "*"
 name = "ffmpeg-python"
 version = "0.2.0"
 description = "Python bindings for FFmpeg - with complex filtering support"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -24,7 +24,7 @@ dev = ["future (==0.17.1)", "numpy (==1.16.4)", "pytest-mock (==1.10.4)", "pytes
 name = "future"
 version = "0.18.2"
 description = "Clean single-source support for Python 3 and 2"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -82,7 +82,7 @@ python-versions = ">=3.7"
 name = "pyqt5"
 version = "5.15.6"
 description = "Python bindings for the Qt cross platform application toolkit"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -94,7 +94,7 @@ PyQt5-sip = ">=12.8,<13"
 name = "pyqt5-qt5"
 version = "5.15.2"
 description = "The subset of a Qt installation needed by PyQt5."
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -102,7 +102,7 @@ python-versions = "*"
 name = "pyqt5-sip"
 version = "12.10.1"
 description = "The sip module support for PyQt5"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -141,7 +141,7 @@ testing-integration = ["pytest", "pytest-xdist", "pytest-enabler", "virtualenv (
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9, <3.11"
-content-hash = "92232736b886ce1c7c984e404ee72bb6c423a0aff90e5cab47f3420d0c69060c"
+content-hash = "dac1d870c41dd462b931182cb3d6fe2158330de7c3333285cc7de0c3a8b84553"
 
 [metadata.files]
 altgraph = [

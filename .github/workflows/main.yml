@@ -26,14 +26,20 @@ jobs:
           options: -v ${{ github.workspace }}:/build
           shell: bash
           run: |
-            pacman -Syu --noconfirm python python-poetry python-setuptools qt5-base libxcomposite gtk3 pango mpdecimal base-devel &&
+            pacman -Syu --noconfirm python qt5-base libxcomposite gtk3 pango mpdecimal base-devel &&
             cd /build &&
+            ls -al &&
+            curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0a2 &&
+            export PATH="/root/.local/bin:$PATH" &&
             poetry config virtualenvs.in-project true &&
+            poetry update &&
             poetry install &&
+            ls -l /build/.venv/bin/pyinstaller &&
             poetry run pyinstaller --clean --onefile --add-binary 'binaries/linux:.' migaku-player-converter.py
 
+
       - name: rename binary
-        run: sudo mv dist/migaku-player-converter dist/migaku-player-converter-linux
+        run: pwd && ls -la && ls -la dist && sudo mv dist/migaku-player-converter dist/migaku-player-converter-linux
       - name: release-linux
         uses: ncipollo/release-action@v1.8.9
         id: create_release
@@ -51,7 +57,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: pipx install poetry
+      - run: curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0a2
       - name: build project
         run: |
           poetry config virtualenvs.in-project true
@@ -80,10 +86,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: pipx install poetry
+      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
       - name: build project
         run: |
           poetry config virtualenvs.in-project true
+          poetry self update 1.2.0a2
           poetry install
           poetry run pyinstaller --onefile --clean --add-binary 'binaries/windows;.' migaku-player-converter.py
       - name: release-windows
