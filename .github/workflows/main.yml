@@ -60,10 +60,10 @@ jobs:
       - run: curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0a2
       - name: build project
         run: |
-          export PATH="/Users/runner/Library/Python/3.9/bin:$PATH"
-          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry config virtualenvs.in-project true
-          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry install
-          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
+          export PATH="/root/.local/bin:$PATH"
+          poetry config virtualenvs.in-project true
+          poetry install
+          poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: Create release dir
         run: mkdir release
       - name: rename binary
@@ -90,7 +90,7 @@ jobs:
       - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
       - name: build project
         run: |
-          set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts"
+          set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry"
           poetry config virtualenvs.in-project true
           poetry self update 1.2.0a2
           poetry install
