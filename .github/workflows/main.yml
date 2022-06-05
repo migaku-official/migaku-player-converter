@@ -60,7 +60,7 @@ jobs:
       - run: curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0a2
       - name: build project
         run: |
-          export PATH="/root/.local/bin:$PATH"
+          export PATH="/Users/runner/Library/Python/3.9/bin:$PATH
           poetry config virtualenvs.in-project true
           poetry install
           poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
@@ -90,7 +90,7 @@ jobs:
       - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
       - name: build project
         run: |
-          set PATH="%PATH%;%APPDATA%\Python\Scripts"
+          set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts"
           poetry config virtualenvs.in-project true
           poetry self update 1.2.0a2
           poetry install
