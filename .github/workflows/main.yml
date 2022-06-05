@@ -87,7 +87,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py ---version 1.2.0a2
+      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py - --version 1.2.0a2
       - name: build project
         run: |
           set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry"
