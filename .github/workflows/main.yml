@@ -61,9 +61,9 @@ jobs:
       - name: build project
         run: |
           export PATH="/Users/runner/Library/Python/3.9/bin:$PATH"
-          poetry config virtualenvs.in-project true
-          poetry install
-          poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
+          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry config virtualenvs.in-project true
+          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry install
+          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: Create release dir
         run: mkdir release
       - name: rename binary
