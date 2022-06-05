@@ -87,12 +87,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
+      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py ---version 1.2.0a2
       - name: build project
         run: |
           set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry"
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry config virtualenvs.in-project true
-          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry self update 1.2.0a2
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry install
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry run pyinstaller --onefile --clean --add-binary 'binaries/windows;.' migaku-player-converter.py
       - name: release-windows
