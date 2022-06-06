@@ -63,6 +63,55 @@ if missing_program:
     )
     sys.exit(1)
 
+video_file_endings = [
+    ".webm",
+    ".mkv",
+    ".flv",
+    ".flv",
+    ".vob",
+    ".ogv",
+    ".ogg",
+    ".drc",
+    ".gif",
+    ".gifv",
+    ".mng",
+    ".avi",
+    ".MTS",
+    ".M2TS",
+    ".TS",
+    ".mov",
+    ".qt",
+    ".wmv",
+    ".yuv",
+    ".rm",
+    ".rmvb",
+    ".viv",
+    ".asf",
+    ".amv",
+    ".mp4",
+    ".m4p",
+    ".m4v",
+    ".mpg",
+    ".mp2",
+    ".mpeg",
+    ".mpe",
+    ".mpv",
+    ".mpg",
+    ".mpeg",
+    ".m2v",
+    ".m4v",
+    ".svi",
+    ".3gp",
+    ".3g2",
+    ".mxf",
+    ".roq",
+    ".nsv",
+    ".flv",
+    ".f4v",
+    ".f4p",
+    ".f4a",
+    ".f4b",
+]
 
 class LanguageSelector(QDialog):
     def __init__(self, streams: list[dict[str, Any]]):
@@ -74,7 +123,6 @@ class LanguageSelector(QDialog):
         self.combobox = QComboBox(self)
         self.combo_dict = {}
         for index, stream in enumerate(streams):
-            print(stream)
             title = stream["tags"]["title"] if "title" in stream["tags"] else ""
             language = stream["tags"]["language"] if "language" in stream["tags"] else ""
 
@@ -97,15 +145,8 @@ class LanguageSelector(QDialog):
 
 
 def check_if_video_file(filename):
-    try:
-        probe = ffmpeg.probe(filename, cmd=ffprobe_command)
-    except ffmpeg.Error:
-        # print(e.stderr)
-        return False
-    video_stream = next((stream for stream in probe["streams"] if stream["codec_type"] == "video"), None)
-    if video_stream is None:
-        return False
-    return True
+    file_extension = Path(filename).suffix
+    return any((ext == file_extension for ext in video_file_endings))
 
 
 def decide_on_audio_stream(streams: list[dict[str, Any]]):
@@ -140,6 +181,7 @@ def decide_on_audio_stream(streams: list[dict[str, Any]]):
 
 
 def convert_to_migaku_video(input_file):
+    assert ffprobe_command
     streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
     keep_video = False
     keep_audio = False
@@ -178,7 +220,7 @@ Do you want to continue?
             if stream["codec_name"] in ["aac", "mp3", "opus", "flac"]:
                 keep_audio = True
             print(f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept")
-        if stream["codec_type"] == "subtitle" and stream["codec_name"] in ["subrip", "ass", "ssa"]:
+        if stream["codec_type"] == "subtitle":
             subtitle_indices.append(stream["index"])
 
     ffmpeg_args = {"filename": output_file, "strict": "-2", "scodec": "mov_text"}
@@ -195,6 +237,14 @@ Do you want to continue?
     ffmpeg.output(output_video, output_audio, *output_subtitles, **ffmpeg_args).overwrite_output().run(
         cmd=ffmpeg_command
     )
+    for subtitle_index in subtitle_indices:
+        language = streams[subtitle_index]["tags"]["language"] if "language" in streams[subtitle_index]["tags"] else ""
+        suffix = f".{str(subtitle_index)}_{language}.srt"
+        subtitle = input[str(subtitle_index)]
+        name = filename.with_suffix(suffix)
+        print(name)
+
+        ffmpeg.output(subtitle, filename=name).run(cmd=ffmpeg_command)
 
 
 def print_ffprobe(input_file):
