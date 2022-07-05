@@ -63,6 +63,8 @@ if missing_program:
     )
     sys.exit(1)
 
+subtitle_text_codec_names = ["srt", "ass", "ssa", "subrip"]
+
 video_file_endings = [
     ".webm",
     ".mkv",
@@ -221,7 +223,10 @@ Do you want to continue?
                 keep_audio = True
             print(f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept")
         if stream["codec_type"] == "subtitle":
-            subtitle_indices.append(stream["index"])
+            if stream["codec_name"] in subtitle_text_codec_names:
+                subtitle_indices.append(stream["index"])
+            else:
+                print(f"subtitle codec is {stream['codec_name']}, will not be kept")
 
     ffmpeg_args = {"filename": output_file, "strict": "-2", "scodec": "mov_text"}
     if keep_audio:
