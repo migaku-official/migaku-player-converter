@@ -29,7 +29,7 @@ jobs:
             pacman -Syu --noconfirm python qt5-base libxcomposite gtk3 pango mpdecimal base-devel &&
             cd /build &&
             ls -al &&
-            curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0a2 &&
+            curl -sSL https://install.python-poetry.org | python3 - &&
             export PATH="/root/.local/bin:$PATH" &&
             poetry config virtualenvs.in-project true &&
             poetry update &&
@@ -57,10 +57,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0a2
+      - run: curl -sSL https://install.python-poetry.org | python3 -
       - name: build project
         run: |
-          export PATH="/Users/runner/Library/Python/3.9/bin:$PATH"
+          export PATH="/Users/runner/.local/bin:$PATH"
           poetry config virtualenvs.in-project true
           poetry install
           poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
@@ -87,7 +87,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py - --version 1.2.0a2
+      - run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
       - name: build project
         run: |
           set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry"
