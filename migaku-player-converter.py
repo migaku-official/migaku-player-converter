@@ -25,8 +25,8 @@ confirmed_hevc_codec_conversion = False
 
 app = QApplication([])
 
-ffprobe_command: Optional[str] = ""
-ffmpeg_command: Optional[str] = ""
+ffprobe_command: str = ""
+ffmpeg_command: str = ""
 
 
 def resource_path(relative_path):
@@ -45,9 +45,11 @@ if platform.system() == "Windows":
 
 
 if not ffprobe_command:
-    ffprobe_command = which("ffprobe")
+    if temp_ffprobe_command := which("ffprobe"):
+        ffprobe_command = temp_ffprobe_command
 if not ffmpeg_command:
-    ffmpeg_command = which("ffmpeg")
+    if temp_ffmpeg_command := which("ffmpeg"):
+        ffmpeg_command = temp_ffmpeg_command
 
 missing_program = ""
 if not ffprobe_command:
@@ -114,6 +116,7 @@ video_file_endings = [
     ".f4a",
     ".f4b",
 ]
+
 
 class LanguageSelector(QDialog):
     def __init__(self, streams: list[dict[str, Any]]):
@@ -219,7 +222,7 @@ Do you want to continue?
             print(f"video codec is {stream['codec_name']}, will {'' if keep_video else 'not '}be kept")
 
         if stream["codec_type"] == "audio" and stream["index"] == audio_index:
-            if stream["codec_name"] in ["aac", "mp3", "opus", "flac", "eac3", "ac3", "vorbis"]:
+            if stream["codec_name"] in ["aac", "mp3", "opus", "flac", "ac3", "vorbis"]:
                 keep_audio = True
             print(f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept")
         if stream["codec_type"] == "subtitle":
