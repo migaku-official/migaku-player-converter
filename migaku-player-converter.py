@@ -222,7 +222,7 @@ Do you want to continue?
             print(f"video codec is {stream['codec_name']}, will {'' if keep_video else 'not '}be kept")
 
         if stream["codec_type"] == "audio" and stream["index"] == audio_index:
-            if stream["codec_name"] in ["aac", "mp3", "opus", "flac", "ac3", "vorbis"]:
+            if stream["codec_name"] in ["aac", "mp3", "opus", "flac", "vorbis"]:
                 keep_audio = True
             print(f"audio codec is {stream['codec_name']}, will {'' if keep_audio else 'not '}be kept")
         if stream["codec_type"] == "subtitle":
