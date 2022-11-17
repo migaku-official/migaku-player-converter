@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 license = "gpl2"
 
 [tool.poetry.dependencies]
-python = ">=3.9, <3.14"
+python = ">=3.9, <3.11"
 PyQt5 = "^5.15.6"
 ffmpeg-python = "^0.2.0"
 

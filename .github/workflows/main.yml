@@ -92,6 +92,7 @@ jobs:
         run: |
           set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry"
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry config virtualenvs.in-project true
+          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry env use python3.10
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry install
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry run pyinstaller --onefile --clean --add-binary 'binaries/windows;.' migaku-player-converter.py
       - name: release-windows
