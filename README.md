@@ -3,11 +3,11 @@
 This program converts your video files so they become compatible with the Migaku Player (can be opened in the Migaku Browser Extension).
 
 ## Download
-[Windows Download](https://github.com/migaku-official/migaku-player-converter/releases/download/v0.8.3-alpha/migaku-player-converter.exe)
+[Windows Download](https://github.com/migaku-official/migaku-player-converter/releases/download/v0.8.10-alpha/migaku-player-converter.exe)
 
-[Mac Download](https://github.com/migaku-official/migaku-player-converter/releases/download/v0.8.3-alpha/migaku-player-converter-mac.dmg)
+[Mac Download](https://github.com/migaku-official/migaku-player-converter/releases/download/v0.8.10-alpha/migaku-player-converter-mac.dmg)
 
-[Linux Download](https://github.com/migaku-official/migaku-player-converter/releases/download/v0.8.3-alpha/migaku-player-converter-linux)
+[Linux Download](https://github.com/migaku-official/migaku-player-converter/releases/download/v0.8.10-alpha/migaku-player-converter-linux)
 
 ## Instructions
 * Download the program for your operating system
