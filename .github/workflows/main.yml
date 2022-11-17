@@ -91,6 +91,8 @@ jobs:
       - name: build project
         run: |
           set PATH="%PATH%;C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry"
+          py -0p
+          C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry env info
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry config virtualenvs.in-project true
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry env use 3.9
           C:\Users\runneradmin\AppData\Roaming\Python\Scripts\poetry install
