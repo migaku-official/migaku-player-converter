@@ -1,4 +1,5 @@
 import os
+from os.path import splitext
 import platform
 import pprint
 import sys
@@ -66,7 +67,13 @@ if missing_program:
     )
     sys.exit(1)
 
-subtitle_text_codec_names = ["srt", "ass", "ssa", "subrip"]
+subtitle_text_codec_names = ["srt", "ass", "ssa", "subrip", "vtt", "webvtt", "mov_text"]
+
+subtitle_file_endings_to_convert = [
+    ".ass",
+    ".ssa",
+    ".vtt",
+]
 
 video_file_endings = [
     ".webm",
@@ -151,8 +158,15 @@ class LanguageSelector(QDialog):
 
 
 def check_if_video_file(filename):
-    file_extension = Path(filename).suffix
+    file_extension = splitext(filename)[-1]
     return any((ext == file_extension for ext in video_file_endings))
+
+
+def check_if_subtitle_file_to_convert(filename):
+    print(filename)
+    file_extension = splitext(filename)[-1]
+    print(file_extension)
+    return any((ext == file_extension for ext in subtitle_file_endings_to_convert))
 
 
 def decide_on_audio_stream(streams: list[dict[str, Any]]):
@@ -271,6 +285,13 @@ Do you want to convert the video or keep it as "HEVC"?
         ffmpeg.output(subtitle, filename=name).run(cmd=ffmpeg_command)
 
 
+def convert_to_migaku_subtitle(input_file):
+    input_file = Path(input_file)
+    ffmpeg.input(input_file).output(filename=input_file.with_suffix(".migaku_player_ready.srt")).overwrite_output().run(
+        cmd=ffmpeg_command
+    )
+
+
 def print_ffprobe(input_file):
     pp = pprint.PrettyPrinter(indent=4, width=178, sort_dicts=False)
     streams = ffmpeg.probe(input_file, cmd=ffprobe_command)["streams"]
@@ -284,6 +305,7 @@ def print_ffprobe(input_file):
 
 
 current_dir_files = os.listdir(os.curdir)
+print(current_dir_files)
 if (
     platform.system() == "Darwin"
     and getattr(sys, "frozen", False)
@@ -296,7 +318,12 @@ if (
 current_dir_video_files = list(filter(check_if_video_file, current_dir_files))
 current_dir_video_files_not_converted = [file for file in current_dir_video_files if "migaku_player_ready" not in file]
 
+current_dir_subtitle_files_to_convert = list(filter(check_if_subtitle_file_to_convert, current_dir_files))
+
 
 for file in current_dir_video_files_not_converted:
     # print_ffprobe(file)
     convert_to_migaku_video(file)
+for file in current_dir_subtitle_files_to_convert:
+    print(file)
+    convert_to_migaku_subtitle(file)
