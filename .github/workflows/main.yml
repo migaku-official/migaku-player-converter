@@ -46,7 +46,6 @@ jobs:
         with:
           draft: false
           allowUpdates: true
-          prerelease: true
           artifacts: "dist/*"
 
         env:
@@ -78,7 +77,6 @@ jobs:
         with:
           draft: false
           allowUpdates: true
-          prerelease: true
           artifacts: "release/*"
 
   build-windows:
@@ -103,5 +101,4 @@ jobs:
         with:
           draft: false
           allowUpdates: true
-          prerelease: true
           artifacts: "dist/*"
