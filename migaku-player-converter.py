@@ -4,7 +4,7 @@ import pprint
 import sys
 from pathlib import Path
 from shutil import which
-from typing import Any, Optional
+from typing import Any
 
 import ffmpeg
 from PyQt5.QtCore import Qt
@@ -22,6 +22,7 @@ save_audio_index = False
 saved_audio_index = 0
 
 confirmed_hevc_codec_conversion = False
+confirmed_hevc_keep = False
 
 app = QApplication([])
 
@@ -196,29 +197,46 @@ def convert_to_migaku_video(input_file):
     output_file = filename.with_suffix(".migaku_player_ready.mp4")
     for stream in streams:
         if stream["codec_type"] == "video":
-            if stream["codec_name"] == "h264":
+            if stream["codec_name"] in ["h264", "vp8", "vp9", "av1"]:
                 keep_video = True
             if stream["codec_name"] == "hevc":
                 global confirmed_hevc_codec_conversion
-                if not confirmed_hevc_codec_conversion:
-                    button = QMessageBox.warning(
-                        None,
-                        "Migaku Warning Dialog",
+                global confirmed_hevc_keep
+                print(f"confirmed_hevc_keep: {confirmed_hevc_keep}")
+                print(f"confirmed_hevc_codec_conversion: {confirmed_hevc_codec_conversion}")
+                if not confirmed_hevc_codec_conversion and not confirmed_hevc_keep:
+                    # button = QMessageBox.
+                    message_box = QMessageBox()
+                    message_box.setWindowTitle("Migaku HEVC Selection Dialog")
+                    message_box.setText(
                         """
-The video codec "hevc" (also called "h265") contained in your file is incompatible with Migaku Player.
-Converting it may take a long time and take up significant resources.
-You can circumvent this in the future by downloading files that are encoded with "h264".
+The video codec "HEVC" (also called "h265") contained in your file is now supported by the latest Chrome versions (>= version 105).
+In some circumstances, it is possible that the video will still not play (notably if you are on Linux or if you are using an older version of Chrome).
 
-Do you want to continue?
+If you are unsure, please select "Keep HEVC" and try to play the video.
+If it does not play, please select "Convert HEVC" and try again.
+Keep in mind that converting may take a long time and use up significant resources.
+
+Do you want to convert the video or keep it as "HEVC"?
                         """,
-                        buttons=QMessageBox.Yes | QMessageBox.Cancel,
-                        defaultButton=QMessageBox.Yes,
                     )
-                    if button == QMessageBox.Cancel:
-                        print("video codec canceled")
-                        sys.exit(0)
-                    else:
+                    abort_button = message_box.addButton("Abort", QMessageBox.RejectRole)
+                    convert_button = message_box.addButton("Convert HEVC", QMessageBox.NoRole)
+                    keep_button = message_box.addButton("Keep HEVC", QMessageBox.YesRole)
+                    message_box.setDefaultButton(keep_button)
+                    message_box.exec()
+                    if message_box.clickedButton() == keep_button:
+                        print("keeping hevc")
+                        confirmed_hevc_keep = True
+                        keep_video = True
+                    elif message_box.clickedButton() == convert_button:
+                        print("converting hevc")
                         confirmed_hevc_codec_conversion = True
+                        keep_video = False
+                    elif message_box.clickedButton() == abort_button:
+                        sys.exit(0)
+                else:
+                    keep_video = True
             print(f"video codec is {stream['codec_name']}, will {'' if keep_video else 'not '}be kept")
 
         if stream["codec_type"] == "audio" and stream["index"] == audio_index:
@@ -237,10 +255,10 @@ Do you want to continue?
     if keep_video:
         ffmpeg_args["vcodec"] = "copy"
 
-    input = ffmpeg.input(input_file)
-    output_video = input["v:0"]
-    output_audio = input[str(audio_index)]
-    output_subtitles = [input[str(index)] for index in subtitle_indices]
+    ffmpeg_input = ffmpeg.input(input_file)
+    output_video = ffmpeg_input["v:0"]
+    output_audio = ffmpeg_input[str(audio_index)]
+    output_subtitles = [ffmpeg_input[str(index)] for index in subtitle_indices]
 
     ffmpeg.output(output_video, output_audio, *output_subtitles, **ffmpeg_args).overwrite_output().run(
         cmd=ffmpeg_command
@@ -248,7 +266,7 @@ Do you want to continue?
     for subtitle_index in subtitle_indices:
         language = streams[subtitle_index]["tags"]["language"] if "language" in streams[subtitle_index]["tags"] else ""
         suffix = f".{str(subtitle_index)}_{language}.srt"
-        subtitle = input[str(subtitle_index)]
+        subtitle = ffmpeg_input[str(subtitle_index)]
         name = filename.with_suffix(suffix)
         print(name)
 
