@@ -202,8 +202,6 @@ def convert_to_migaku_video(input_file):
             if stream["codec_name"] == "hevc":
                 global confirmed_hevc_codec_conversion
                 global confirmed_hevc_keep
-                print(f"confirmed_hevc_keep: {confirmed_hevc_keep}")
-                print(f"confirmed_hevc_codec_conversion: {confirmed_hevc_codec_conversion}")
                 if not confirmed_hevc_codec_conversion and not confirmed_hevc_keep:
                     # button = QMessageBox.
                     message_box = QMessageBox()
@@ -211,7 +209,7 @@ def convert_to_migaku_video(input_file):
                     message_box.setText(
                         """
 The video codec "HEVC" (also called "h265") contained in your file is now supported by the latest Chrome versions (>= version 105).
-In some circumstances, it is possible that the video will still not play (notably if you are on Linux or if you are using an older version of Chrome).
+In some circumstances, it is possible that the video will still not play (notably if you are on Linux, don't have hardware that can decode HEVC or if you are using an older version of Chrome).
 
 If you are unsure, please select "Keep HEVC" and try to play the video.
 If it does not play, please select "Convert HEVC" and try again.
