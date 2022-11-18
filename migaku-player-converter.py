@@ -208,7 +208,7 @@ def convert_to_migaku_video(input_file):
                     message_box.setWindowTitle("Migaku HEVC Selection Dialog")
                     message_box.setText(
                         """
-The video codec "HEVC" (also called "h265") contained in your file is now supported by the latest Chrome versions (>= version 105).
+The video codec "HEVC" (also called "h265") contained in your file is now supported by the latest Chrome versions (>= version 107).
 In some circumstances, it is possible that the video will still not play (notably if you are on Linux, don't have hardware that can decode HEVC or if you are using an older version of Chrome).
 
 If you are unsure, please select "Keep HEVC" and try to play the video.
