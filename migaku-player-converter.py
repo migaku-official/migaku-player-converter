@@ -277,7 +277,7 @@ Do you want to convert the video or keep it as "HEVC"?
     )
     for subtitle_index in subtitle_indices:
         language = streams[subtitle_index]["tags"]["language"] if "language" in streams[subtitle_index]["tags"] else ""
-        suffix = f".{str(subtitle_index)}_{language}.srt"
+        suffix = f".{str(subtitle_index)}.{language}.srt"
         subtitle = ffmpeg_input[str(subtitle_index)]
         name = filename.with_suffix(suffix)
         print(name)
