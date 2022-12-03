@@ -270,11 +270,8 @@ Do you want to convert the video or keep it as "HEVC"?
     ffmpeg_input = ffmpeg.input(input_file)
     output_video = ffmpeg_input["v:0"]
     output_audio = ffmpeg_input[str(audio_index)]
-    output_subtitles = [ffmpeg_input[str(index)] for index in subtitle_indices]
 
-    ffmpeg.output(output_video, output_audio, *output_subtitles, **ffmpeg_args).overwrite_output().run(
-        cmd=ffmpeg_command
-    )
+    ffmpeg.output(output_video, output_audio, **ffmpeg_args).overwrite_output().run(cmd=ffmpeg_command)
     for subtitle_index in subtitle_indices:
         language = streams[subtitle_index]["tags"]["language"] if "language" in streams[subtitle_index]["tags"] else ""
         suffix = f".{str(subtitle_index)}.{language}.srt"
