@@ -47,11 +47,11 @@ if platform.system() == "Windows":
 
 
 if not ffprobe_command:
-    if temp_ffprobe_command := which("ffprobe"):
-        ffprobe_command = temp_ffprobe_command
+    if temp_ffprobe_command_path := which("ffprobe"):
+        ffprobe_command = temp_ffprobe_command_path
 if not ffmpeg_command:
-    if temp_ffmpeg_command := which("ffmpeg"):
-        ffmpeg_command = temp_ffmpeg_command
+    if temp_ffmpeg_command_path := which("ffmpeg"):
+        ffmpeg_command = temp_ffmpeg_command_path
 
 missing_program = ""
 if not ffprobe_command:
