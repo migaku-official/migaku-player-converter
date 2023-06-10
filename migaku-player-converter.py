@@ -216,7 +216,9 @@ def convert_to_migaku_video(input_file):
             if stream["codec_name"] == "hevc":
                 global confirmed_hevc_codec_conversion
                 global confirmed_hevc_keep
-                if not confirmed_hevc_codec_conversion and not confirmed_hevc_keep:
+                if confirmed_hevc_codec_conversion:
+                    keep_video = False
+                elif not confirmed_hevc_codec_conversion and not confirmed_hevc_keep:
                     # button = QMessageBox.
                     message_box = QMessageBox()
                     message_box.setWindowTitle("Migaku HEVC Selection Dialog")
