@@ -303,7 +303,7 @@ def print_ffprobe(input_file):
             pp.pprint(stream)
 
 
-current_dir_files = os.listdir(os.curdir)
+current_dir_files = sorted(os.listdir(os.curdir))
 print(current_dir_files)
 if (
     platform.system() == "Darwin"
@@ -312,7 +312,7 @@ if (
 ):
     bundle_dir = Path(os.path.dirname(os.path.abspath(getattr(sys, "executable", os.curdir))))
     basepath = str(bundle_dir.parent.parent.parent.absolute())
-    current_dir_files = os.listdir(basepath)
+    current_dir_files = sorted(os.listdir(basepath))
     current_dir_files = [os.path.join(basepath, file) for file in current_dir_files]
 current_dir_video_files = list(filter(check_if_video_file, current_dir_files))
 current_dir_video_files_not_converted = [file for file in current_dir_video_files if "migaku_player_ready" not in file]
