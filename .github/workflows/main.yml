@@ -74,7 +74,7 @@ jobs:
       - name: List available disk space
         run: sudo df -h
       - name: Bundle dmg
-        run: hdiutil create -volname migaku-player-converter -srcfolder /dist/ -ov -format UDZO /release/migaku-player-converter-mac.dmg
+        run: hdiutil create -volname migaku-player-converter -srcfolder "$HOME/dist/" -ov -format UDZO /release/migaku-player-converter-mac.dmg
       - name: release-mac
         uses: ncipollo/release-action@v1.8.9
         id: create_release
