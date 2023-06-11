@@ -64,9 +64,9 @@ jobs:
           poetry install
           poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: Create release dir
-        run: mkdir "$GITHUB_WORKSPACE/release"
+        run: mkdir -p "$GITHUB_WORKSPACE/release"
       - name: Create dist dir
-        run: mkdir "$GITHUB_WORKSPACE/dist"
+        run: mkdir -p "$GITHUB_WORKSPACE/dist"
       - name: rename binary
         run: mv dist/migaku-player-converter "$GITHUB_WORKSPACE/release/migaku-player-converter-mac"
       - name: rename binary
