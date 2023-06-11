@@ -52,7 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
   build-mac:
     # The type of runner that the job will run on
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -64,24 +64,24 @@ jobs:
           poetry install
           poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: Create release dir
-        run: mkdir "$HOME/release"
+        run: mkdir "$GITHUB_WORKSPACE/release"
       - name: Create dist dir
-        run: mkdir "$HOME/dist"
+        run: mkdir "$GITHUB_WORKSPACE/dist"
       - name: rename binary
-        run: mv dist/migaku-player-converter "$HOME/release/migaku-player-converter-mac"
+        run: mv dist/migaku-player-converter "$GITHUB_WORKSPACE/release/migaku-player-converter-mac"
       - name: rename binary
-        run: mv dist/migaku-player-converter.app "$HOME/dist/migaku-player-converter-mac.app"
+        run: mv dist/migaku-player-converter.app "$GITHUB_WORKSPACE/dist/migaku-player-converter-mac.app"
       - name: List available disk space
         run: sudo df -h
       - name: Bundle dmg
-        run: hdiutil create -volname migaku-player-converter -srcfolder "$HOME/dist/" -ov -format UDZO "$HOME/release/migaku-player-converter-mac.dmg"
+        run: hdiutil create -volname migaku-player-converter -srcfolder "$GITHUB_WORKSPACE/dist" -ov -format UDZO "$GITHUB_WORKSPACE/release/migaku-player-converter-mac.dmg"
       - name: release-mac
         uses: ncipollo/release-action@v1.8.9
         id: create_release
         with:
           draft: false
           allowUpdates: true
-          artifacts: "$HOME/release/*"
+          artifacts: "$GITHUB_WORKSPACE/release/*"
 
   build-windows:
     # The type of runner that the job will run on
