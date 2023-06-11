@@ -64,13 +64,13 @@ jobs:
           poetry install
           poetry run pyinstaller --onefile --clean --windowed --add-binary 'binaries/mac:.' migaku-player-converter.py
       - name: Create release dir
-        run: mkdir /release
+        run: mkdir "$HOME/release"
       - name: Create dist dir
-        run: mkdir /dist
+        run: mkdir "$HOME/dist"
       - name: rename binary
-        run: mv dist/migaku-player-converter /release/migaku-player-converter-mac
+        run: mv dist/migaku-player-converter "$HOME/release/migaku-player-converter-mac"
       - name: rename binary
-        run: mv dist/migaku-player-converter.app /dist/migaku-player-converter-mac.app
+        run: mv dist/migaku-player-converter.app "$HOME/dist/migaku-player-converter-mac.app"
       - name: List available disk space
         run: sudo df -h
       - name: Bundle dmg
@@ -81,7 +81,7 @@ jobs:
         with:
           draft: false
           allowUpdates: true
-          artifacts: "/release/*"
+          artifacts: "$HOME/release/*"
 
   build-windows:
     # The type of runner that the job will run on
