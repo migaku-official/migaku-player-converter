@@ -69,6 +69,8 @@ jobs:
         run: mv dist/migaku-player-converter release/migaku-player-converter-mac
       - name: rename binary
         run: mv dist/migaku-player-converter.app dist/migaku-player-converter-mac.app
+      - name: List available disk space
+        run: sudo df -h
       - name: Bundle dmg
         run: hdiutil create -volname migaku-player-converter -srcfolder dist/ -ov -format UDZO release/migaku-player-converter-mac.dmg
       - name: release-mac
